@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BenchtopWeb</title>
+    <style>
+        :root {
+            --primary: #2a2d3e;
+            --secondary: #1e2132;
+            --accent: #4a9bff;
+            --text: #e1e6f0;
+            --success: #4caf50;
+            --danger: #f44336;
+            --warning: #ff9800;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--primary);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Layout */
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 240px;
+            background-color: var(--secondary);
+            padding: 20px 0;
+            height: 100%;
+        }
+        
+        .logo {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #33364a;
+            margin-bottom: 20px;
+        }
+        
+        .logo h1 {
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-item:hover {
+            background-color: #33364a;
+        }
+        
+        .nav-item.active {
+            background-color: #33364a;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .nav-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .header {
+            padding: 15px 25px;
+            background-color: var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #33364a;
+        }
+        
+        .search-bar {
+            background-color: #33364a;
+            border-radius: 4px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            width: 300px;
+        }
+        
+        .search-bar input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            margin-left: 10px;
+            width: 100%;
+            outline: none;
+        }
+        
+        /* Container List */
+        .container-list {
+            padding: 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        
+        .list-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        
+        .btn i {
+            margin-right: 5px;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        .btn-success {
+            background-color: var(--success);
+        }
+        
+        .btn-warning {
+            background-color: var(--warning);
+        }
+        
+        .container-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .container-card {
+            background-color: var(--secondary);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+        
+        .container-card:hover {
+            transform: translateY(-3px);
+        }
+        
+        .card-header {
+            padding: 15px;
+            border-bottom: 1px solid #33364a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        
+        .status-running {
+            background-color: var(--success);
+        }
+        
+        .status-stopped {
+            background-color: var(--danger);
+        }
+        
+        .card-body {
+            padding: 15px;
+        }
+        
+        .card-footer {
+            padding: 12px 15px;
+            background-color: #33364a;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        /* Container View */
+        .container-view {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+        }
+        
+        .view-header {
+            padding: 15px 25px;
+            background-color: var(--secondary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .view-content {
+            flex: 1;
+            padding: 0;
+        }
+        
+        #container-frame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+        }
+        
+        /* Utility */
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="logo">
+                <h1>BenchtopWeb</h1>
+            </div>
+            <div class="nav-item active" data-view="containers">
+                <i>📦</i> Containers
+            </div>
+            <div class="nav-item" data-view="dashboard">
+                <i>📊</i> Dashboard
+            </div>
+            <div class="nav-item" data-view="settings">
+                <i>⚙️</i> Settings
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <h2 id="current-view">Containers</h2>
+                <div class="search-bar">
+                    <i>🔍</i>
+                    <input type="text" id="search-input" placeholder="Search containers...">
+                </div>
+            </div>
+            
+            <!-- Container List View -->
+            <div class="container-list" id="container-list">
+                <div class="list-header">
+                    <h3>Local HTML Containers</h3>
+                    <button class="btn" id="add-container-btn">
+                        <i>➕</i> Add Container
+                    </button>
+                </div>
+                
+                <div class="container-grid" id="container-grid">
+                    <!-- Containers will be added here dynamically -->
+                </div>
+            </div>
+            
+            <!-- Container Detail View -->
+            <div class="container-view" id="container-view">
+                <div class="view-header">
+                    <h2 id="container-title">Container Details</h2>
+                    <button class="btn" id="back-to-list">
+                        <i>←</i> Back to Containers
+                    </button>
+                </div>
+                <div class="view-content">
+                    <iframe id="container-frame"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample container data
+        const containers = [
+            {
+                id: 'dashboard',
+                name: 'Dashboard',
+                path: 'dashboard.html',
+                status: 'running',
+                description: 'System monitoring dashboard'
+            },
+            {
+                id: 'notes',
+                name: 'Notes App',
+                path: 'notes.html',
+                status: 'running',
+                description: 'Simple note-taking application'
+            },
+            {
+                id: 'calculator',
+                name: 'Calculator',
+                path: 'calculator.html',
+                status: 'stopped',
+                description: 'Basic calculator tool'
+            },
+            {
+                id: 'weather',
+                name: 'Weather',
+                path: 'weather.html',
+                status: 'running',
+                description: 'Local weather display'
+            }
+        ];
+
+        // DOM Elements
+        const containerGrid = document.getElementById('container-grid');
+        const containerList = document.getElementById('container-list');
+        const containerView = document.getElementById('container-view');
+        const containerFrame = document.getElementById('container-frame');
+        const containerTitle = document.getElementById('container-title');
+        const searchInput = document.getElementById('search-input');
+        const backToListBtn = document.getElementById('back-to-list');
+        const addContainerBtn = document.getElementById('add-container-btn');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        // Render containers
+        function renderContainers(containersToRender) {
+            containerGrid.innerHTML = '';
+            
+            containersToRender.forEach(container => {
+                const card = document.createElement('div');
+                card.className = 'container-card';
+                card.dataset.id = container.id;
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3>${container.name}</h3>
+                        <span class="status-indicator">
+                            <span class="status status-${container.status}"></span>
+                            ${container.status}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <p>${container.description}</p>
+                        <p><strong>Path:</strong> ${container.path}</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn ${container.status === 'running' ? 'btn-warning' : 'btn-success'}" data-action="${container.status === 'running' ? 'stop' : 'start'}" data-id="${container.id}">
+                            ${container.status === 'running' ? 'Stop' : 'Start'}
+                        </button>
+                        <button class="btn" data-action="view" data-id="${container.id}">
+                            View
+                        </button>
+                        <button class="btn btn-danger" data-action="delete" data-id="${container.id}">
+                            Delete
+                        </button>
+                    </div>
+                `;
+                
+                containerGrid.appendChild(card);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('[data-action]').forEach(btn => {
+                btn.addEventListener('click', handleContainerAction);
+            });
+        }
+
+        // Handle container actions
+        function handleContainerAction(e) {
+            const action = e.target.dataset.action;
+            const containerId = e.target.dataset.id;
+            const container = containers.find(c => c.id === containerId);
+            
+            switch(action) {
+                case 'view':
+                    openContainer(container);
+                    break;
+                case 'start':
+                    container.status = 'running';
+                    renderContainers(containers);
+                    break;
+                case 'stop':
+                    container.status = 'stopped';
+                    renderContainers(containers);
+                    break;
+                case 'delete':
+                    if(confirm(`Delete container "${container.name}"?`)) {
+                        const index = containers.findIndex(c => c.id === containerId);
+                        containers.splice(index, 1);
+                        renderContainers(containers);
+                    }
+                    break;
+            }
+        }
+
+        // Open container in iframe
+        function openContainer(container) {
+            containerTitle.textContent = container.name;
+            containerFrame.src = container.path;
+            containerList.classList.add('hidden');
+            containerView.classList.remove('hidden');
+        }
+
+        // Add new container
+        function addNewContainer() {
+            const name = prompt('Container name:');
+            if (!name) return;
+            
+            const path = prompt('HTML file path:');
+            if (!path) return;
+            
+            const newContainer = {
+                id: name.toLowerCase().replace(/\s+/g, '-'),
+                name,
+                path,
+                status: 'stopped',
+                description: 'New HTML container'
+            };
+            
+            containers.push(newContainer);
+            renderContainers(containers);
+        }
+
+        // Initialize
+        function init() {
+            renderContainers(containers);
+            
+            // Navigation
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    navItems.forEach(i => i.classList.remove('active'));
+                    item.classList.add('active');
+                    document.getElementById('current-view').textContent = item.textContent.trim();
+                });
+            });
+            
+            // Search functionality
+            searchInput.addEventListener('input', () => {
+                const searchTerm = searchInput.value.toLowerCase();
+                const filtered = containers.filter(container => 
+                    container.name.toLowerCase().includes(searchTerm) || 
+                    container.description.toLowerCase().includes(searchTerm)
+                );
+                renderContainers(filtered);
+            });
+            
+            // Back to list button
+            backToListBtn.addEventListener('click', () => {
+                containerView.style.display = 'none';
+                containerList.style.display = 'block';
+            });
+            
+            // Add container button
+            addContainerBtn.addEventListener('click', addNewContainer);
+        }
+
+        // Start the app
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
